@@ -21,10 +21,10 @@
 		    }, options),
 
 			resize : function () {
-				var style = this.settings.style.tall;
+				var style = this.settings.styles.tall;
 				
-				if (this.wrapper.width() === this.settings.style.wide.width ) {
-					style = this.settings.style.wide;
+				if (this.wrapper.width() === this.settings.styles.wide.width ) {
+					style = this.settings.styles.wide;
 				}
 				
 				this.setWidth(style);
@@ -33,22 +33,30 @@
 				this.iframe = $('.fb-like-box').find('iframe');
 
 				var loader = '<img src="/img/ajax-loader.gif" alt="Loading…"/>',
-				newSrc = this.iframe.attr('src').replace(/&width=([0-9]*)/g, '&width=' + style.width - 40).replace(/&height=([0-9]*)/g, '&height=' + style.height);
+				newSrc = this.iframe.attr('src').replace(/&width=([0-9]*)/g, '&width=' + style.width).replace(/&height=([0-9]*)/g, '&height=' + style.height);
 				console.log(newSrc);
 				
 				//this.domElem.css('display', 'none');
 				//this.wrapper.append(loader);
 				
-				this.domElem.attr('data-width', style.width - 40);
+				this.domElem.attr('data-width', style.width);
 				this.domElem.attr('data-height', style.height);
 				
-				this.iframe.css('width', style.width - 40);
+				this.iframe.css('width', style.width);
 				this.iframe.css('height', style.height);
 				this.iframe.attr('src', newSrc);
 				
 			},
+			widthOk : function (w) {
+				
+			},
 			resizeNeeded : function () {
-				if (this.domElem.width() + 40 != this.wrapper.width() && this.wrapper.width() === this.wide.width || this.wrapper.width() === this.tall.width) {
+				var wWidth = parseInt(this.wrapper.width()),
+				eWidth = parseInt(this.domElem.width()),
+				widthOk = this.widthOk(wWidth);
+
+				if (eWidth != wWidth && widthOk)
+				if (parseInt(this.domElem.width() + 40) != parseInt(this.wrapper.width()) && (this.wrapper.width() === (this.settings.styles.wide.width) || this.wrapper.width() === (this.settings.styles.tall.width))) {
 					return true;
 					console.log('resizing...');
 				}
