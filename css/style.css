@@ -65,16 +65,38 @@ td { vertical-align: top; }
 .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
 
 
+/* ==================================== 
+Helpers 
+======================================= */
+
+.global-width {
+	background: #eee;
+	padding: 20px; margin: 0 auto;
+	width: 300px;
+}
 
 
 
 
-
-
-
-@media only screen and (min-width: 35em) {
-  
-
+@media only screen and (min-width: 600px) {
+	.global-width {
+		width: 600px;
+	}
+	
+	.fb-like-box::after {
+		content: "{
+			wide : {
+				width : '600',
+				height : '200',
+				colorScheme : 'light',
+				showFaces : true,
+				borderColor : '#f00',
+				showStream : false,
+				showHeader : false
+			}
+		}";
+		display: none;
+	}
 }
 
 .ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; *line-height: 0; }
