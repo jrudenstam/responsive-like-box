@@ -48,7 +48,7 @@
 				
 			},
 			widthOk : function (w) {
-				
+				return true;
 			},
 			resizeNeeded : function () {
 				var wWidth = parseInt(this.wrapper.width()),
