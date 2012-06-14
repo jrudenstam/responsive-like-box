@@ -130,7 +130,9 @@
 			    }
 			};
 			
-			widget.init();
+			if (JSON){
+				widget.init();	
+			}
 		});	
 	}
 	
