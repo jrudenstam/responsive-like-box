@@ -8,7 +8,7 @@
 			height : this.attr('data-width'),
 			colorScheme : this.attr('data-colorscheme'),
 			showFaces : this.attr('data-show-faces'),
-			borderColor : this.attr('data-border-color'),
+			borderColor : escape(this.attr('data-border-color')),
 			showStream : this.attr('data-stream'),
 			showHeader : this.attr('data-header'),
 			URIhelper : {
@@ -16,6 +16,7 @@
 				height : 'height',
 				colorScheme : 'colorscheme',
 				showFaces : 'show_faces',
+				borderColor : 'border_color',
 				showStream : 'stream',
 				showHeader : 'header'
 			},
@@ -32,11 +33,11 @@
 	
 		return this.each(function(){
 			// Create the widget object assigning it to the wrapper (witch get the initalizer $().responsiveLikeBox();)
-			var widget = this,
-			poll = '';
+			var widget = this, loader;
 			
 			// Extend to full object
 			widget.init = function () {
+				loader = $('<img class="responsive-lb-loader" src="img/ajax-loader.gif" alt="Loaing..."/>').appendTo(widget.wrapper.$domElem.parent());
 				return $(this).each(function(){
 			    	$(window).bind('load.responsiveLikeBox resize.responsiveLikeBox', widget.iframe.resize);
 			    });
@@ -72,6 +73,11 @@
 			    		var newApperance = widget.wrapper.apperance(widget);
 			    		
 				    	if(JSON.stringify(widget.iframe.apperance) != JSON.stringify(newApperance)){
+				    	
+				    		// Hide widget and show ajax spinner
+				    	
+				    		//var iframe = widget.wrapper.$domElem.find('iframe').css('visibility', 'none');
+				    		
 				        	//Change all data in iframe and data-attrs
 				        	var newSrc = widget.wrapper.$domElem.find('iframe').attr('src');
 				        	
@@ -79,13 +85,15 @@
 				        		
 				        		// Replace data-attrs for all options
 				        		widget.wrapper.$domElem.attr(settings.attrHelper[option], newApperance[option]);
-				        					        	
-					        	// Replace URI values in iframe URI. Exclude borderColor since it is not in URI
-					        	if (option != 'borderColor'){
-					        		var regEx = new RegExp('&' + settings.URIhelper[option] + '=([a-z0-9]*)', 'g');
-						        	newSrc = newSrc.replace(regEx, 
-						        	'&' + settings.URIhelper[option] + '=' + newApperance[option]);
-					        	}
+				        		
+				        		//Replace all querysting parameters in ifram src		        	
+					        	// Match on any queryparameter with option name
+					            var regEx = new RegExp('[?&]' + settings.URIhelper[option] + '=([a-z0-9%]*)', 'g');
+					            
+					            // Build new queryparameter
+						        newSrc = newSrc.replace(regEx, 
+						        newSrc.match(regEx).toString().substring(0,1) 
+						        + settings.URIhelper[option] + '=' + escape(newApperance[option]));
 					        	
 					        	// Width and height need more replacements
 					        	if (option === 'width' || option === 'height'){
@@ -96,11 +104,6 @@
 						        	widget.wrapper.$domElem.find('iframe').css(option, newApperance[option]);
 					        	}
 					        	
-					        	// Set border color on iframe
-					        	if (option === 'borderColor'){
-						        	widget.wrapper.$domElem.find('iframe').css('border-color', newApperance[option]);
-					        	}
-					        	
 					        	// Set new src (will make it reload)
 					        	widget.wrapper.$domElem.find('iframe').attr('src', newSrc);
 					        	
@@ -108,13 +111,16 @@
 					        	widget.iframe.apperance = newApperance;
 				        	}
 				        	
-				    	}	
+				        	loader.remove();
+				        	
+				    	}
 				    	
 			    	}
 			    	
 			    	// If src is'nt set yet try again
 			    	else {
-				    	poll = setTimeout(widget.iframe.resize, 1000);
+				    	var poll = setTimeout(widget.iframe.resize, 1000);
+				    	console.log(poll);
 			    	}
 			    }
 			};
