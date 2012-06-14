@@ -32,7 +32,8 @@
 	
 		return this.each(function(){
 			// Create the widget object assigning it to the wrapper (witch get the initalizer $().responsiveLikeBox();)
-			var widget = this;
+			var widget = this,
+			poll = '';
 			
 			// Extend to full object
 			widget.init = function () {
@@ -53,7 +54,9 @@
 			    	}
 			    	
 			    	catch (e) {
-				    	console.log('There seem to be a problem with your JSON format in your CSS: ' + e.message);
+				    	// Print error in widget
+				    	$('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' 
+				    	+ e.message + '</strong></p>').appendTo(el);
 			    	}
 			    }
 			};
@@ -61,11 +64,13 @@
 			widget.iframe = {
 			    apperance : settings, /* Takes the settings object (the markup implementation unless specified when initalizing) */
 			    resize : function () {
-			    	// Check if styles matches
-			    	var newApperance = widget.wrapper.apperance(widget);
 			    	
 			    	// Check wether the src is set yet. Resize depends on it
 			    	if (widget.wrapper.$domElem.find('iframe').attr('src')) {
+			    	
+			    		// Check if styles matches
+			    		var newApperance = widget.wrapper.apperance(widget);
+			    		
 				    	if(JSON.stringify(widget.iframe.apperance) != JSON.stringify(newApperance)){
 				        	//Change all data in iframe and data-attrs
 				        	var newSrc = widget.wrapper.$domElem.find('iframe').attr('src');
@@ -103,48 +108,13 @@
 					        	widget.iframe.apperance = newApperance;
 				        	}
 				        	
-				        	/*
-				        	// Replace width and height
-				        	newSrc = newSrc.replace(/&width=([0-9]*)/g, '&width=' + newApperance.width);
-				        	newSrc = newSrc.replace(/&height=([0-9]*)/g, '&height=' + newApperance.height);
-				        	
-				        	// Replace colorScheme, showFaces, showStream, showHeader
-				        	newSrc = newSrc.replace(/&colorscheme=([0-9a-z]*)/g, '&colorscheme=' + newApperance.colorScheme);
-				        	newSrc = newSrc.replace(/&show_faces=([a-z]*)/g, '&show_faces=' + newApperance.showFaces);
-				        	newSrc = newSrc.replace(/&stream=([0-9a-z]*)/g, '&stream=' + newApperance.showStream);
-				        	newSrc = newSrc.replace(/&header=([a-z]*)/g, '&header=' + newApperance.showHeader);
-				        	
-				        	// To be consisten change the data-attrs in wrapper
-				        	widget.wrapper.$domElem.attr('data-width', newApperance.width);
-				        	widget.wrapper.$domElem.attr('data-height', newApperance.height);
-				        	
-				        	widget.wrapper.$domElem.attr('data-colorscheme', newApperance.colorScheme);
-				        	widget.wrapper.$domElem.attr('data-show-faces', newApperance.showFaces);
-				        	widget.wrapper.$domElem.attr('data-border-color', newApperance.borderColor);
-				        	widget.wrapper.$domElem.attr('data-stream', newApperance.showStream);
-				        	widget.wrapper.$domElem.attr('data-header', newApperance.showHeader);
-				        	
-				        	// Reset inline styles for wrapping span
-				        	widget.wrapper.$domElem.children('span').css('width', newApperance.width);
-				        	widget.wrapper.$domElem.children('span').css('height', newApperance.height);
-				        	
-				        	// Set inline styles for iframe
-				        	widget.wrapper.$domElem.find('iframe').css('width', newApperance.width);
-				        	widget.wrapper.$domElem.find('iframe').css('height', newApperance.height);
-				        	widget.wrapper.$domElem.find('iframe').css('border-color', newApperance.borderColor);
-				        	
-				        	// Set new src (will make it reload)
-				        	widget.wrapper.$domElem.find('iframe').attr('src', newSrc);
-				        	
-				        	// Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
-				        	widget.iframe.apperance = newApperance; */
 				    	}	
 				    	
 			    	}
 			    	
 			    	// If src is'nt set yet try again
 			    	else {
-				    	setTimeout(widget.iframe.resize, 1000);
+				    	poll = setTimeout(widget.iframe.resize, 1000);
 			    	}
 			    }
 			};
