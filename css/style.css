@@ -76,7 +76,7 @@ Helpers
 }
 
 .fb-like-box::after {
-		content: '{ "width" : "300", "height" : "300", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#f00", "showStream" : "false", "showHeader" : "false" }';
+		content: '{ "width" : "300", "height" : "300", "colorScheme" : "light", "showFaces" : "true", "borderColor" : "#00f", "showStream" : "false", "showHeader" : "false" }';
 		display: none;
 	}
 
@@ -88,7 +88,7 @@ Helpers
 	}
 	
 	.fb-like-box::after {
-		content: '{ "width" : "600", "height" : "600", "colorScheme" : "light", "showFaces" : "true", "borderColor" : "#f00", "showStream" : "false", "showHeader" : "false" }';
+		content: '{ "width" : "600", "height" : "400", "colorScheme" : "dark", "showFaces" : "false", "borderColor" : "#f00", "showStream" : "true", "showHeader" : "true" }';
 	}
 }
 
