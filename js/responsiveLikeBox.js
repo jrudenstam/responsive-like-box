@@ -49,9 +49,9 @@
 			    	// Hacky replace of quotes in JSON formated CSS
 			    	var data = window.getComputedStyle(el, '::after').content.replace('\'', '').replace('\'', '');
 			    	
-			    	// If JSON is'nt correctly formated will throw here
+			    	// If JSON is'nt correctly formated will throw error here
 			    	try {
-				    	return JSON.parse(data)
+				    	return JSON.parse(data);
 			    	}
 			    	
 			    	catch (e) {
@@ -63,23 +63,28 @@
 			};
 			
 			widget.iframe = {
+				
 			    apperance : settings, /* Takes the settings object (the markup implementation unless specified when initalizing) */
 			    resize : function () {
+			    
+			    	// Set iframe
+			    	widget.iframe.$domElem = widget.wrapper.$domElem.find('iframe');
+			    	
+			    	// Iframe load event
+			    	widget.iframe.$domElem.bind('load.responsiveLikeBox', function(){
+				    	loader.hide();
+			    	});
 			    	
 			    	// Check wether the src is set yet. Resize depends on it
-			    	if (widget.wrapper.$domElem.find('iframe').attr('src')) {
+			    	if (widget.iframe.$domElem.attr('src')) {
 			    	
 			    		// Check if styles matches
 			    		var newApperance = widget.wrapper.apperance(widget);
 			    		
 				    	if(JSON.stringify(widget.iframe.apperance) != JSON.stringify(newApperance)){
-				    	
-				    		// Hide widget and show ajax spinner
-				    	
-				    		//var iframe = widget.wrapper.$domElem.find('iframe').css('visibility', 'none');
-				    		
+				    					    		
 				        	//Change all data in iframe and data-attrs
-				        	var newSrc = widget.wrapper.$domElem.find('iframe').attr('src');
+				        	var newSrc = widget.iframe.$domElem.attr('src');
 				        	
 				        	for (option in newApperance){
 				        		
@@ -101,17 +106,18 @@
 						        	widget.wrapper.$domElem.children('span').css(option, newApperance[option]);
 						        	
 						        	// Set inline styles for iframe
-						        	widget.wrapper.$domElem.find('iframe').css(option, newApperance[option]);
+						        	widget.iframe.$domElem.css(option, newApperance[option]);
 					        	}
 					        	
 					        	// Set new src (will make it reload)
-					        	widget.wrapper.$domElem.find('iframe').attr('src', newSrc);
+					        	widget.iframe.$domElem.attr('src', newSrc);
 					        	
 					        	// Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
 					        	widget.iframe.apperance = newApperance;
 				        	}
 				        	
-				        	loader.remove();
+				        	// Show loader while waiting for fb
+				        	loader.show();
 				        	
 				    	}
 				    	
@@ -119,8 +125,7 @@
 			    	
 			    	// If src is'nt set yet try again
 			    	else {
-				    	var poll = setTimeout(widget.iframe.resize, 1000);
-				    	console.log(poll);
+				    	setTimeout(widget.iframe.resize, 1000);
 			    	}
 			    }
 			};

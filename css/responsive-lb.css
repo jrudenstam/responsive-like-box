@@ -1,8 +1,13 @@
 .responsive-lb-loader {
+	background: #fff;
+	border-radius: 3px;
+	padding: 40px; margin: -40px;
 	position: absolute;
 	left: 50%; top: 50%;
+	z-index: 999;
 }
 
 .global-width {
 	position: relative;
+	z-index: 1;
 }
