@@ -11,7 +11,7 @@
 			borderColor : escape(this.attr('data-border-color')),
 			showStream : this.attr('data-stream'),
 			showHeader : this.attr('data-header'),
-			URIhelper : {
+			translateToUri : {
 				width : 'width',
 				height : 'height',
 				colorScheme : 'colorscheme',
@@ -20,7 +20,7 @@
 				showStream : 'stream',
 				showHeader : 'header'
 			},
-			attrHelper : {
+			translateToDataAttr : {
 				width : 'data-width',
 				height : 'data-height',
 				colorScheme : 'data-colorscheme',
@@ -33,7 +33,8 @@
 	
 		return this.each(function(){
 			// Create the widget object assigning it to the wrapper (witch get the initalizer $().responsiveLikeBox();)
-			var widget = this, loader;
+			// timesToTry = if facebook does'nt respond in 5 tries abort and use HTML implementation
+			var widget = this, loader, timesToTry = 5;
 			
 			// Extend to full object
 			widget.init = function () {
@@ -45,26 +46,34 @@
 			
 			widget.wrapper = {
 			    $domElem : $(this),
-			    apperance : function(el) {
+			    apperance : function(el, type) {
 			    	// Hacky replace of quotes in JSON formated CSS
-			    	var data = window.getComputedStyle(el, '::after').content.replace('\'', '').replace('\'', '');
+			    	var data = window.getComputedStyle(el, '::after').content;
+			    	// Removes first quotes and removes escape char (Opera and FF escapes the quotes) if found
+			    	data = data.substring(1, data.length - 1).replace(/\\/g, '');
 			    	
-			    	// If JSON is'nt correctly formated will throw error here
-			    	try {
-				    	return JSON.parse(data);
+			    	if (type != 'string'){
+				    	// If JSON is'nt correctly formated will throw error here
+				    	try {
+				    	    data = $.parseJSON(data);
+				    	}
+				    	
+				    	catch (e) {
+				    	    // Print error in widget
+				    	    $('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' 
+				    	    + e.message + '</strong></p>').appendTo(el);
+				    	    data = '';
+				    	}	
 			    	}
 			    	
-			    	catch (e) {
-				    	// Print error in widget
-				    	$('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' 
-				    	+ e.message + '</strong></p>').appendTo(el);
-			    	}
+			    	return data;
 			    }
 			};
 			
 			widget.iframe = {
 				
 			    apperance : settings, /* Takes the settings object (the markup implementation unless specified when initalizing) */
+			    resizing : false,
 			    resize : function () {
 			    
 			    	// Set iframe
@@ -78,27 +87,36 @@
 			    	// Check wether the src is set yet. Resize depends on it
 			    	if (widget.iframe.$domElem.attr('src')) {
 			    	
-			    		// Check if styles matches
-			    		var newApperance = widget.wrapper.apperance(widget);
-			    		
-				    	if(JSON.stringify(widget.iframe.apperance) != JSON.stringify(newApperance)){
-				    					    		
+			    		// Check if styles matches using stringified
+			    		var newApperanceString = widget.wrapper.apperance(widget, 'string');
+				    	if(widget.iframe.apperance != newApperanceString && !widget.iframe.resizing){
+				    	
+				    		widget.iframe.resizing = true;
+				    	
+				    		// Get apperance as obj
+				    		var newApperance = widget.wrapper.apperance(widget);
+				    		
 				        	//Change all data in iframe and data-attrs
 				        	var newSrc = widget.iframe.$domElem.attr('src');
 				        	
 				        	for (option in newApperance){
-				        		
 				        		// Replace data-attrs for all options
-				        		widget.wrapper.$domElem.attr(settings.attrHelper[option], newApperance[option]);
+				        		widget.wrapper.$domElem.attr(settings.translateToDataAttr[option], newApperance[option]);
 				        		
 				        		//Replace all querysting parameters in ifram src		        	
 					        	// Match on any queryparameter with option name
-					            var regEx = new RegExp('[?&]' + settings.URIhelper[option] + '=([a-z0-9%]*)', 'g');
-					            
+					            var regEx = new RegExp('[?&]' + settings.translateToUri[option] + '=([a-z0-9%]*)', 'g');
+					            					            
 					            // Build new queryparameter
-						        newSrc = newSrc.replace(regEx, 
-						        newSrc.match(regEx).toString().substring(0,1) 
-						        + settings.URIhelper[option] + '=' + escape(newApperance[option]));
+					            try {
+						            var query = newSrc.match(regEx).toString();
+						            newSrc = newSrc.replace(regEx, query.substring(0,1) 
+						            + settings.translateToUri[option] + '=' + escape(newApperance[option]));
+					            }
+					            
+					            catch (e) {
+						            console.log('Seems you want to change something you did not specify in your original implementation. If you want to change eg. border-color yo need to specify a border color when you get the code for your fb likebox. Error: ' + e.message);
+					            }
 					        	
 					        	// Width and height need more replacements
 					        	if (option === 'width' || option === 'height'){
@@ -109,30 +127,42 @@
 						        	widget.iframe.$domElem.css(option, newApperance[option]);
 					        	}
 					        	
-					        	// Set new src (will make it reload)
-					        	widget.iframe.$domElem.attr('src', newSrc);
-					        	
-					        	// Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
-					        	widget.iframe.apperance = newApperance;
 				        	}
+				        	
+				        	// Set new src (will make it reload)
+					       	widget.iframe.$domElem.attr('src', newSrc);
+					           
+					        // Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
+					        widget.iframe.apperance = newApperanceString;
 				        	
 				        	// Show loader while waiting for fb
 				        	loader.show();
 				        	
+				        	widget.iframe.resizing = false;
 				    	}
 				    	
 			    	}
 			    	
 			    	// If src is'nt set yet try again
 			    	else {
-				    	setTimeout(widget.iframe.resize, 1000);
+			    		if(timesToTry){
+			    			// Try in 0.5 seconds
+				    		setTimeout(widget.iframe.resize, 500);	
+			    		}
+			    		
+			    		else {
+				    		loader.hide();
+			    		}
+			    		
+			    		// One try is used try five times
+				    	timesToTry --;
 			    	}
 			    }
 			};
 			
-			if (JSON){
-				widget.init();	
-			}
+			// Runs
+			widget.init();	
+				
 		});	
 	}
 	

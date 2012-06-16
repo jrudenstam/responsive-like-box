@@ -84,12 +84,12 @@ Helpers
 
 @media only screen and (min-width: 600px) {
 	.global-width {
-		background: #ee9;
+		background: #444;
 		width: 600px;
 	}
 	
 	.fb-like-box::after {
-		content: '{ "width" : "600", "height" : "600", "colorScheme" : "light", "showFaces" : "true", "borderColor" : "#ee9", "showStream" : "true", "showHeader" : "false" }';
+		content: '{ "width" : "600", "height" : "600", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#333", "showStream" : "true", "showHeader" : "false" }';
 	}
 }
 
