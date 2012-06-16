@@ -1,3 +1,3 @@
 $(function(){
-	$('.fb-like-box').responsiveLikeBox({height:1000});
+	$('.fb-like-box').responsiveLikeBox();
 });

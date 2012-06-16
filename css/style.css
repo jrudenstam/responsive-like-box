@@ -75,11 +75,11 @@ Helpers
 	width: 300px;
 }
 
-.fb-like-box::after {
+/*.fb-like-box::after {
 		content: '{ "width" : "300", "height" : "600", "colorScheme" : "light", "showFaces" : "true", "borderColor" : "#eee", "showStream" : "false", "showHeader" : "false" }';
 		display: none;
 	}
-
+*/
 
 
 @media only screen and (min-width: 600px) {
@@ -90,6 +90,7 @@ Helpers
 	
 	.fb-like-box::after {
 		content: '{ "width" : "600", "height" : "600", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#333", "showStream" : "true", "showHeader" : "false" }';
+		display: none;
 	}
 }
 

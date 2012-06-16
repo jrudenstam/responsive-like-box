@@ -1,16 +1,24 @@
 (function($) {
 
 	$.fn.responsiveLikeBox = function (options) {
+	
+		var settings = $.extend({
+			initialTimeout : 5
+		});
 		
-		// Create some defaults, extending them with any options that were provided
-		var settings = $.extend( {
+		// Create some defaults
+		var defaults = {
 			width : this.attr('data-width'),
 			height : this.attr('data-width'),
 			colorScheme : this.attr('data-colorscheme'),
 			showFaces : this.attr('data-show-faces'),
 			borderColor : escape(this.attr('data-border-color')),
 			showStream : this.attr('data-stream'),
-			showHeader : this.attr('data-header'),
+			showHeader : this.attr('data-header')
+		};
+		
+		// Helpers to use when updating iframe src and data-attrs
+		var helpers = {
 			translateToUri : {
 				width : 'width',
 				height : 'height',
@@ -29,12 +37,12 @@
 				showStream : 'data-stream',
 				showHeader : 'data-header'
 			}
-		}, options);
+		};
 	
 		return this.each(function(){
 			// Create the widget object assigning it to the wrapper (witch get the initalizer $().responsiveLikeBox();)
-			// timesToTry = if facebook does'nt respond in 5 tries abort and use HTML implementation
-			var widget = this, loader, timesToTry = 5;
+			// settings.initialTimeout = if facebook does'nt respond in 5 tries abort and use HTML implementation
+			var widget = this, loader;
 			
 			// Extend to full object
 			widget.init = function () {
@@ -49,21 +57,34 @@
 			    apperance : function(el, type) {
 			    	// Hacky replace of quotes in JSON formated CSS
 			    	var data = window.getComputedStyle(el, '::after').content;
-			    	// Removes first quotes and removes escape char (Opera and FF escapes the quotes) if found
-			    	data = data.substring(1, data.length - 1).replace(/\\/g, '');
 			    	
-			    	if (type != 'string'){
-				    	// If JSON is'nt correctly formated will throw error here
-				    	try {
-				    	    data = $.parseJSON(data);
-				    	}
+			    	if (data){
+				    	// Removes first quotes and removes escape char (Opera and FF escapes the quotes) if found
+				    	data = data.substring(1, data.length - 1).replace(/\\/g, '');
 				    	
-				    	catch (e) {
-				    	    // Print error in widget
-				    	    $('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' 
-				    	    + e.message + '</strong></p>').appendTo(el);
-				    	    data = '';
+				    	if (type != 'string'){
+				    	    // If JSON is'nt correctly formated will throw error here
+				    	    try {
+				    	        data = $.parseJSON(data);
+				    	    }
+				    	    
+				    	    catch (e) {
+				    	        // Print error in widget
+				    	        $('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' 
+				    	        + e.message + '</strong></p>').appendTo(el);
+				    	        data = '';
+				    	    }	
 				    	}	
+			    	}
+			    	
+			    	else{
+			    		if(type != 'string'){
+				    		data = defaults;
+			    		}
+			    		
+			    		else {
+				    		data = JSON.stringify(defaults);
+			    		}
 			    	}
 			    	
 			    	return data;
@@ -72,7 +93,7 @@
 			
 			widget.iframe = {
 				
-			    apperance : settings, /* Takes the settings object (the markup implementation unless specified when initalizing) */
+			    apperance : defaults, /* Takes the defaults object (the markup implementation unless specified when initalizing) */
 			    resizing : false,
 			    resize : function () {
 			    
@@ -101,17 +122,17 @@
 				        	
 				        	for (option in newApperance){
 				        		// Replace data-attrs for all options
-				        		widget.wrapper.$domElem.attr(settings.translateToDataAttr[option], newApperance[option]);
+				        		widget.wrapper.$domElem.attr(helpers.translateToDataAttr[option], newApperance[option]);
 				        		
 				        		//Replace all querysting parameters in ifram src		        	
 					        	// Match on any queryparameter with option name
-					            var regEx = new RegExp('[?&]' + settings.translateToUri[option] + '=([a-z0-9%]*)', 'g');
+					            var regEx = new RegExp('[?&]' + helpers.translateToUri[option] + '=([a-z0-9%]*)', 'g');
 					            					            
 					            // Build new queryparameter
 					            try {
 						            var query = newSrc.match(regEx).toString();
 						            newSrc = newSrc.replace(regEx, query.substring(0,1) 
-						            + settings.translateToUri[option] + '=' + escape(newApperance[option]));
+						            + helpers.translateToUri[option] + '=' + escape(newApperance[option]));
 					            }
 					            
 					            catch (e) {
@@ -145,7 +166,7 @@
 			    	
 			    	// If src is'nt set yet try again
 			    	else {
-			    		if(timesToTry){
+			    		if(settings.initialTimeout){
 			    			// Try in 0.5 seconds
 				    		setTimeout(widget.iframe.resize, 500);	
 			    		}
@@ -155,12 +176,12 @@
 			    		}
 			    		
 			    		// One try is used try five times
-				    	timesToTry --;
+				    	settings.initialTimeout --;
 			    	}
 			    }
 			};
 			
-			// Runs
+			// Runs plugin
 			widget.init();	
 				
 		});	
