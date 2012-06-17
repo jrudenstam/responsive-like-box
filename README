@@ -1,0 +1,16 @@
+Responsive Facebook Like Box
+This jQuery plugin makes it possible to update an regular Facebook Like Box (http://developers.facebook.com/docs/reference/plugins/like-box/) without reloading the page. It is triggerd by media queries in your CSS wich makes it convinient and easy to use.
+
+Implementation
+1. Make a 'regular' implementation of the official Facebook Like Box widget (http://developers.facebook.com/docs/reference/plugins/like-box/)
+2. Link the responsive-like-box.js and responsive-like-box.css to your HTML document
+3. Initalize the plugin by targeting the .fb-like-box div. $('.fb-like-box').responsiveLikeBox();
+4. Use the ::after pseudo element to specify changes in your regular CSS file. Example:
+
+@media only screen and (min-width: 600px) {
+	
+	.fb-like-box::after {
+		content: '{ "width" : "600", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
+		display: none;
+	}
+}
