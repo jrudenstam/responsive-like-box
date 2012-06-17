@@ -69,10 +69,26 @@ td { vertical-align: top; }
 Helpers 
 ======================================= */
 
+* {
+	box-sizing: border-box;
+}
+
 .global-width {
 	background: #eee;
 	padding: 20px; margin: 0 auto;
-	width: 300px;
+	width: 320px;
+}
+
+@media only screen and (orientation:landscape) {
+	.global-width {
+		background: #955;
+		width: 480px;
+	}
+	
+	.fb-like-box::after {
+		content: '{ "width" : "480", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
+		display: none;
+	}
 }
 
 @media only screen and (min-width: 600px) {
