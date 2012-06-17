@@ -75,7 +75,7 @@ Helpers
 
 .global-width {
 	background: #eee;
-	padding: 1px; margin: 0 auto;
+	padding: 10px; margin: 0 auto;
 	width: 320px;
 }
 
@@ -86,7 +86,7 @@ Helpers
 	}
 	
 	.fb-like-box::after {
-		content: '{ "width" : "480", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
+		content: '{ "width" : "460", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
 		display: none;
 	}
 }
@@ -98,7 +98,7 @@ Helpers
 	}
 	
 	.fb-like-box::after {
-		content: '{ "width" : "600", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
+		content: '{ "width" : "580", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
 		display: none;
 	}
 }
