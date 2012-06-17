@@ -4,7 +4,7 @@
 	
 		var settings = $.extend({
 			initialTimeout : 5
-		});
+		}, options);
 		
 		// Create some defaults
 		var defaults = {
@@ -12,7 +12,7 @@
 			height : this.attr('data-width'),
 			colorScheme : this.attr('data-colorscheme'),
 			showFaces : this.attr('data-show-faces'),
-			borderColor : escape(this.attr('data-border-color')),
+			borderColor : this.attr('data-border-color'),
 			showStream : this.attr('data-stream'),
 			showHeader : this.attr('data-header')
 		};
@@ -46,6 +46,8 @@
 			
 			// Extend to full object
 			widget.init = function () {
+			
+				// Show loader on first load
 				loader = $('<img class="responsive-lb-loader" src="img/ajax-loader.gif" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
 				return $(this).each(function(){
 			    	$(window).bind('load.responsiveLikeBox resize.responsiveLikeBox', widget.iframe.resize);
@@ -58,7 +60,8 @@
 			    	// Hacky replace of quotes in JSON formated CSS
 			    	var data = window.getComputedStyle(el, '::after').content;
 			    	
-			    	if (data){
+			    	console.log(data);
+			    	if (data && data != 'none'){
 				    	// Removes first quotes and removes escape char (Opera and FF escapes the quotes) if found
 				    	data = data.substring(1, data.length - 1).replace(/\\/g, '');
 				    	
@@ -102,7 +105,15 @@
 			    	
 			    	// Iframe load event
 			    	widget.iframe.el.bind('load.responsiveLikeBox', function(){
+			    	
+			    		// Set iframe apperance to the new apperance
+					    widget.iframe.apperance = newApperanceString;
+					    
+					    // Hide loader
 				    	loader.hide();
+				    	
+				    	// Show iframe
+				    	widget.iframe.el.show();
 			    	});
 			    	
 			    	// Check wether the src is set yet. Resize depends on it
@@ -152,12 +163,10 @@
 				        	
 				        	// Set new src (will make it reload)
 					       	widget.iframe.el.attr('src', newSrc);
-					           
-					        // Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
-					        widget.iframe.apperance = newApperanceString;
 				        	
-				        	// Show loader while waiting for fb
+				        	// Show loader and hide iframe while waiting for fb
 				        	loader.show();
+				        	widget.iframe.el.hide();
 				        	
 				        	widget.iframe.resizing = false;
 				    	}
@@ -182,7 +191,9 @@
 			};
 			
 			// Runs plugin
-			widget.init();	
+			if (JSON && window.getComputedStyle) {
+				widget.init();	
+			}	
 				
 		});	
 	}
