@@ -40,6 +40,8 @@ Facebook Like Box implementation consists of two parts. It might look like this:
 		data-stream="false" 
 		data-header="false">
 	</div>
+	
+Also wrap the `.fb-like-box` div in a wrapper with the class: `.responsive-like-box-wrapper`.
 
 
 ### Initialize the script
