@@ -1,6 +1,6 @@
 # Responsive Facebook Like Box
 
-This jQuery plugin makes it possible to update an `regular` Facebook Like Box's specification without reloading the page. It is used in conjunction with media queries in your CSS wich makes it convinient and easy to use along with a responsive workflow.
+This jQuery plugin makes it possible to update an 'regular' Facebook Like Box's specification without reloading the page. It is used in conjunction with media queries in your CSS wich makes it convinient and easy to use along with a responsive workflow.
 
 
 
