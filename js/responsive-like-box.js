@@ -3,7 +3,8 @@
 	$.fn.responsiveLikeBox = function (options) {
 	
 		var settings = $.extend({
-			initialTimeout : 5
+			initialTimeout : 5,
+			loaderSrc : 'img/ajax-loader.gif'
 		}, options);
 		
 		// Create some defaults
@@ -48,7 +49,7 @@
 			widget.init = function () {
 			
 				// Show loader on first load
-				loader = $('<img class="responsive-lb-loader" src="img/ajax-loader.gif" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
+				loader = $('<img class="responsive-lb-loader" src="' + settings.loaderSrc + '" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
 				return $(this).each(function(){
 			    	$(window).bind('load.responsiveLikeBox resize.responsiveLikeBox', widget.iframe.resize);
 			    });
