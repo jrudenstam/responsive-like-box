@@ -46,14 +46,14 @@
 			
 			// Extend to full object
 			widget.init = function () {
-				loader = $('<img class="responsive-lb-loader" src="img/ajax-loader.gif" alt="Loaing..."/>').appendTo(widget.wrapper.$domElem.parent());
+				loader = $('<img class="responsive-lb-loader" src="img/ajax-loader.gif" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
 				return $(this).each(function(){
 			    	$(window).bind('load.responsiveLikeBox resize.responsiveLikeBox', widget.iframe.resize);
 			    });
 			};
 			
 			widget.wrapper = {
-			    $domElem : $(this),
+			    el : $(this),
 			    apperance : function(el, type) {
 			    	// Hacky replace of quotes in JSON formated CSS
 			    	var data = window.getComputedStyle(el, '::after').content;
@@ -98,15 +98,15 @@
 			    resize : function () {
 			    
 			    	// Set iframe
-			    	widget.iframe.$domElem = widget.wrapper.$domElem.find('iframe');
+			    	widget.iframe.el = widget.wrapper.el.find('iframe');
 			    	
 			    	// Iframe load event
-			    	widget.iframe.$domElem.bind('load.responsiveLikeBox', function(){
+			    	widget.iframe.el.bind('load.responsiveLikeBox', function(){
 				    	loader.hide();
 			    	});
 			    	
 			    	// Check wether the src is set yet. Resize depends on it
-			    	if (widget.iframe.$domElem.attr('src')) {
+			    	if (widget.iframe.el.attr('src')) {
 			    	
 			    		// Check if styles matches using stringified
 			    		var newApperanceString = widget.wrapper.apperance(widget, 'string');
@@ -118,11 +118,11 @@
 				    		var newApperance = widget.wrapper.apperance(widget);
 				    		
 				        	//Change all data in iframe and data-attrs
-				        	var newSrc = widget.iframe.$domElem.attr('src');
+				        	var newSrc = widget.iframe.el.attr('src');
 				        	
 				        	for (option in newApperance){
 				        		// Replace data-attrs for all options
-				        		widget.wrapper.$domElem.attr(helpers.translateToDataAttr[option], newApperance[option]);
+				        		widget.wrapper.el.attr(helpers.translateToDataAttr[option], newApperance[option]);
 				        		
 				        		//Replace all querysting parameters in ifram src		        	
 					        	// Match on any queryparameter with option name
@@ -142,16 +142,16 @@
 					        	// Width and height need more replacements
 					        	if (option === 'width' || option === 'height'){
 					        		// Reset inline styles for wrapping span
-						        	widget.wrapper.$domElem.children('span').css(option, newApperance[option]);
+						        	widget.wrapper.el.children('span').css(option, newApperance[option]);
 						        	
 						        	// Set inline styles for iframe
-						        	widget.iframe.$domElem.css(option, newApperance[option]);
+						        	widget.iframe.el.css(option, newApperance[option]);
 					        	}
 					        	
 				        	}
 				        	
 				        	// Set new src (will make it reload)
-					       	widget.iframe.$domElem.attr('src', newSrc);
+					       	widget.iframe.el.attr('src', newSrc);
 					           
 					        // Set iframe apperance to the new apperance without actually checking. Should be a callback to iframe load.
 					        widget.iframe.apperance = newApperanceString;
