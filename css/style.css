@@ -81,12 +81,12 @@ Helpers
 
 @media only screen and (orientation:landscape) {
 	.global-width {
-		background: #955;
+		background: #ccc;
 		width: 480px;
 	}
 	
 	.fb-like-box::after {
-		content: '{ "width" : "460", "height" : "618", "colorScheme" : "dark", "showFaces" : "true", "borderColor" : "#555", "showStream" : "true", "showHeader" : "false" }';
+		content: '{ "width" : "460", "height" : "618", "showFaces" : "true", "borderColor" : "#ccc", "showStream" : "true", "showHeader" : "false" }';
 		display: none;
 	}
 }
