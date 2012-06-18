@@ -18,7 +18,7 @@ Released under MIT license
 		// Create some defaults
 		var defaults = {
 			width: this.attr('data-width'),
-			height: this.attr('data-width'),
+			height: this.attr('data-height'),
 			colorScheme: this.attr('data-colorscheme'),
 			showFaces: this.attr('data-show-faces'),
 			borderColor: this.attr('data-border-color'),
