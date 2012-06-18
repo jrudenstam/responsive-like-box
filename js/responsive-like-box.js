@@ -70,7 +70,6 @@ Released under MIT license
 					// Hacky replace of quotes in JSON formated CSS
 					var data = window.getComputedStyle(el, '::after').content;
 
-					console.log(data);
 					if (data && data != 'none') {
 						// Removes first quotes and removes escape char (Opera and FF escapes the quotes) if found
 						data = data.substring(1, data.length - 1).replace(/\\/g, '');
