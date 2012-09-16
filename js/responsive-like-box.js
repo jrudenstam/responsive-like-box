@@ -5,6 +5,7 @@ https://github.com/jrudenstam/responsive-like-box
 Copyright 2012 Jacob Rudenstam
 
 Released under MIT license
+http://jrudenstam.mit-license.org/
 */
 (function($) {
 
