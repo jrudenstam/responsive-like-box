@@ -7,7 +7,7 @@ Copyright 2012 Jacob Rudenstam
 Released under MIT license
 http://jrudenstam.mit-license.org/
 */
-(function($) {
+;(function($) {
 
 	$.fn.responsiveLikeBox = function(options) {
 
