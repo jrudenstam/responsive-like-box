@@ -6,10 +6,52 @@ Copyright 2012 Jacob Rudenstam
 
 Released under MIT license
 http://jrudenstam.mit-license.org/
-*/
-;(function($) {
 
-	$.fn.responsiveLikeBox = function(options) {
+resizeend.js © 2012 Dominik Porada
+Distributed under the MIT license: http://porada.mit-license.org
+*/
+
+;(function ($) {
+
+	// Check browser dependencies
+	if (!(window.addEventListener && document.createEvent && window.dispatchEvent && JSON && window.getComputedStyle)) {
+		return;
+	}
+
+
+	// resizeend.js © 2012 Dominik Porada (30 lines)
+	var dispatchResizeEndEvent = function () {
+		var event = document.createEvent("Event");
+		event.initEvent("resizeend", false, false);
+		window.dispatchEvent(event);
+	};
+
+	// Assuming `window.orientation` is all about degrees
+	// (or nothing), the function returns either 0 or 90
+	var getCurrentOrientation = function () {
+		return Math.abs(+window.orientation || 0) % 180;
+	};
+
+	var initialOrientation = getCurrentOrientation();
+	var currentOrientation;
+	var resizeDebounceTimeout;
+
+	window.addEventListener("resize", function () {
+		currentOrientation = getCurrentOrientation();
+
+		// If `window` is resized due to an orientation change,
+		// dispatch `resizeend` immediately; otherwise, slightly delay it
+		if (currentOrientation !== initialOrientation) {
+			dispatchResizeEndEvent();
+			initialOrientation = currentOrientation;
+		}
+		else {
+			clearTimeout(resizeDebounceTimeout);
+			resizeDebounceTimeout = setTimeout(dispatchResizeEndEvent, 100);
+		}
+	}, false);
+
+	$.fn.responsiveLikeBox = function (options) {
 
 		var settings = $.extend({
 			initialTimeout: 5,
@@ -49,25 +91,25 @@ http://jrudenstam.mit-license.org/
 			}
 		};
 
-		return this.each(function() {
+		return this.each(function () {
 			// Create the widget object assigning it to the wrapper (witch get the initalizer $().responsiveLikeBox();)
 			// settings.initialTimeout = if facebook does'nt respond in 5 tries abort and use HTML implementation
 			var widget = this,
 				loader;
 
 			// Extend to full object
-			widget.init = function() {
+			widget.init = function () {
 
 				// Show loader on first load
 				loader = $('<img class="responsive-lb-loader" src="' + settings.loaderSrc + '" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
-				return $(this).each(function() {
-					$(window).bind('load.responsiveLikeBox resize.responsiveLikeBox', widget.iframe.resize);
+				return $(this).each(function () {
+					$(window).bind('load.responsiveLikeBox resizeend.responsiveLikeBox', widget.iframe.resize);
 				});
 			};
 
 			widget.wrapper = {
 				el: $(this),
-				apperance: function(el, type) {
+				apperance: function (el, type) {
 					// Hacky replace of quotes in JSON formated CSS
 					var data = window.getComputedStyle(el, '::after').content;
 
@@ -79,16 +121,19 @@ http://jrudenstam.mit-license.org/
 							// If JSON is'nt correctly formated will throw error here
 							try {
 								data = $.parseJSON(data);
-							} catch (e) {
+							}
+							catch (e) {
 								// Print error in widget
 								$('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' + e.message + '</strong></p>').appendTo(el);
 								data = '';
 							}
 						}
-					} else {
+					}
+					else {
 						if (type != 'string') {
 							data = defaults;
-						} else {
+						}
+						else {
 							data = JSON.stringify(defaults);
 						}
 					}
@@ -102,13 +147,13 @@ http://jrudenstam.mit-license.org/
 				apperance: defaults,
 				/* Takes the defaults object (the markup implementation unless specified when initalizing) */
 				resizing: false,
-				resize: function() {
+				resize: function () {
 
 					// Set iframe
 					widget.iframe.el = widget.wrapper.el.find('iframe');
 
 					// Iframe load event
-					widget.iframe.el.bind('load.responsiveLikeBox', function() {
+					widget.iframe.el.bind('load.responsiveLikeBox', function () {
 
 						// Set iframe apperance to the new apperance
 						widget.iframe.apperance = widget.iframe.newApperanceString;
@@ -147,7 +192,8 @@ http://jrudenstam.mit-license.org/
 								try {
 									var query = newSrc.match(regEx).toString();
 									newSrc = newSrc.replace(regEx, query.substring(0, 1) + helpers.translateToUri[option] + '=' + window.escape(newApperance[option]));
-								} catch (e) {
+								}
+								catch (e) {
 									console.log('Seems you want to change something you did not specify in your original implementation. If you want to change eg. border-color yo need to specify a border color when you get the code for your fb likebox. Error: ' + e.message);
 								}
 
@@ -179,7 +225,8 @@ http://jrudenstam.mit-license.org/
 						if (settings.initialTimeout) {
 							// Try in 0.5 seconds
 							setTimeout(widget.iframe.resize, 500);
-						} else {
+						}
+						else {
 							loader.hide();
 						}
 
@@ -190,9 +237,7 @@ http://jrudenstam.mit-license.org/
 			};
 
 			// Runs plugin
-			if (JSON && window.getComputedStyle) {
-				widget.init();
-			}
+			widget.init();
 
 		});
 	};
