@@ -195,7 +195,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 									newSrc = newSrc.replace(regEx, query.substring(0, 1) + helpers.translateToUri[option] + '=' + window.escape(newApperance[option]));
 								}
 								catch (e) {
-									console.log('Seems you want to change something you did not specify in your original implementation. If you want to change eg. border-color yo need to specify a border color when you get the code for your fb likebox. Error: ' + e.message);
+									window.alert('Seems you want to change something you did not specify in your original implementation. If you want to change eg. border-color yo need to specify a border color when you get the code for your fb likebox. Error: ' + e.message);
 								}
 
 								// Width and height need more replacements
