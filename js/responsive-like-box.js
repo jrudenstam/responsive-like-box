@@ -12,7 +12,8 @@ Distributed under the MIT license: http://porada.mit-license.org
 */
 
 ;(function ($) {
-
+	'use strict';
+	
 	// Check browser dependencies
 	if (!(window.addEventListener && document.createEvent && window.dispatchEvent && JSON && window.getComputedStyle)) {
 		return;
