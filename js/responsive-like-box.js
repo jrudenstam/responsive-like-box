@@ -7,11 +7,11 @@ Copyright 2012 Jacob Rudenstam
 Released under MIT license
 http://jrudenstam.mit-license.org/
 
-resizeend.js © 2012 Dominik Porada
+resizestart.js © 2012 Dominik Porada
 Distributed under the MIT license: http://porada.mit-license.org
 */
 
-;(function ($) {
+;(function ($, window, document, resizeEnd, resizeStart) {
 	'use strict';
 	
 	// Check browser dependencies
@@ -21,36 +21,46 @@ Distributed under the MIT license: http://porada.mit-license.org
 
 
 	// resizeend.js © 2012 Dominik Porada (30 lines)
-	var dispatchResizeEndEvent = function () {
-		var event = document.createEvent("Event");
-		event.initEvent("resizeend", false, false);
-		window.dispatchEvent(event);
-	};
+	var dispatchCustomEvent = function(eventType) {
+    var event = document.createEvent("Event");
+    event.initEvent(eventType, false, false);
+    window.dispatchEvent(event);
+  };
 
-	// Assuming `window.orientation` is all about degrees
-	// (or nothing), the function returns either 0 or 90
-	var getCurrentOrientation = function () {
-		return Math.abs(+window.orientation || 0) % 180;
-	};
+  // Assuming `window.orientation` is all about degrees
+  // (or nothing), the function returns either 0 or 90
+  var getCurrentOrientation = function() {
+    return Math.abs(+window.orientation || 0) % 180;
+  };
 
-	var initialOrientation = getCurrentOrientation();
-	var currentOrientation;
-	var resizeDebounceTimeout;
+  var initialOrientation = getCurrentOrientation();
+  var currentOrientation;
+  var resizeDebounceInit;
+  var resizeDebounceTimeout;
 
-	window.addEventListener("resize", function () {
-		currentOrientation = getCurrentOrientation();
+  window.addEventListener("resize", function() {
+    if ( !resizeDebounceInit ) {
+      dispatchCustomEvent(resizeStart);
+      resizeDebounceInit = true;
+    }
 
-		// If `window` is resized due to an orientation change,
-		// dispatch `resizeend` immediately; otherwise, slightly delay it
-		if (currentOrientation !== initialOrientation) {
-			dispatchResizeEndEvent();
-			initialOrientation = currentOrientation;
-		}
-		else {
-			clearTimeout(resizeDebounceTimeout);
-			resizeDebounceTimeout = setTimeout(dispatchResizeEndEvent, 100);
-		}
-	}, false);
+    currentOrientation = getCurrentOrientation();
+
+    // If `window` is resized due to an orientation change,
+    // dispatch `resizeend` immediately; otherwise, slightly delay it
+    if ( currentOrientation !== initialOrientation ) {
+      dispatchCustomEvent(resizeEnd);
+      initialOrientation = currentOrientation;
+      resizeDebounceInit = false;
+    }
+    else {
+      clearTimeout(resizeDebounceTimeout);
+      resizeDebounceTimeout = setTimeout(function() {
+        dispatchCustomEvent(resizeEnd);
+        resizeDebounceInit = false;
+      }, 100);
+    }
+  }, false);
 
 	$.fn.responsiveLikeBox = function (options) {
 
@@ -104,7 +114,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 				// Show loader on first load
 				loader = $('<img class="responsive-lb-loader" src="' + settings.loaderSrc + '" alt="Loading..."/>').appendTo(widget.wrapper.el.parent());
 				return $(this).each(function () {
-					$(window).bind('load.responsiveLikeBox resizeend.responsiveLikeBox', widget.iframe.resize);
+					$(window).bind('load.responsiveLikeBox resizestart.responsiveLikeBox resizeend.responsiveLikeBox', widget.iframe.resize);
 				});
 			};
 
@@ -148,7 +158,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 				apperance: defaults,
 				/* Takes the defaults object (the markup implementation unless specified when initalizing) */
 				resizing: false,
-				resize: function () {
+				resize: function (event) {
 
 					// Set iframe
 					widget.iframe.el = widget.wrapper.el.find('iframe');
@@ -165,6 +175,13 @@ Distributed under the MIT license: http://porada.mit-license.org
 						// Show iframe
 						widget.iframe.el.show();
 					});
+
+					if (event && event.type === "resizestart"){
+						// Show loader and hide iframe while waiting for resizeend event
+						loader.show();
+						widget.iframe.el.hide();
+						return;
+					}
 
 					// Check wether the src is set yet. Resize depends on it
 					if (widget.iframe.el.attr('src')) {
@@ -231,7 +248,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 							loader.hide();
 						}
 
-						// One try is used try five times
+						// One try is used try [settings.initialTimeout] times
 						settings.initialTimeout--;
 					}
 				}
@@ -243,4 +260,4 @@ Distributed under the MIT license: http://porada.mit-license.org
 		});
 	};
 
-})(jQuery);
+})(jQuery, window, document, "resizeend", "resizestart");
