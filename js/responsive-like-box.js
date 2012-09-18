@@ -13,55 +13,54 @@ Distributed under the MIT license: http://porada.mit-license.org
 
 ;(function ($, window, document, resizeEnd, resizeStart) {
 	'use strict';
-	
+
 	// Check browser dependencies
 	if (!(window.addEventListener && document.createEvent && window.dispatchEvent && JSON && window.getComputedStyle)) {
 		return;
 	}
 
-
 	// resizeend.js © 2012 Dominik Porada (30 lines)
-	var dispatchCustomEvent = function(eventType) {
-    var event = document.createEvent("Event");
-    event.initEvent(eventType, false, false);
-    window.dispatchEvent(event);
-  };
+	var dispatchCustomEvent = function (eventType) {
+		var event = document.createEvent("Event");
+		event.initEvent(eventType, false, false);
+		window.dispatchEvent(event);
+	};
 
-  // Assuming `window.orientation` is all about degrees
-  // (or nothing), the function returns either 0 or 90
-  var getCurrentOrientation = function() {
-    return Math.abs(+window.orientation || 0) % 180;
-  };
+	// Assuming `window.orientation` is all about degrees
+	// (or nothing), the function returns either 0 or 90
+	var getCurrentOrientation = function () {
+		return Math.abs(+window.orientation || 0) % 180;
+	};
 
-  var initialOrientation = getCurrentOrientation();
-  var currentOrientation;
-  var resizeDebounceInit;
-  var resizeDebounceTimeout;
+	var initialOrientation = getCurrentOrientation();
+	var currentOrientation;
+	var resizeDebounceInit;
+	var resizeDebounceTimeout;
 
-  window.addEventListener("resize", function() {
-    if ( !resizeDebounceInit ) {
-      dispatchCustomEvent(resizeStart);
-      resizeDebounceInit = true;
-    }
+	window.addEventListener("resize", function () {
+		if (!resizeDebounceInit) {
+			dispatchCustomEvent(resizeStart);
+			resizeDebounceInit = true;
+		}
 
-    currentOrientation = getCurrentOrientation();
+		currentOrientation = getCurrentOrientation();
 
-    // If `window` is resized due to an orientation change,
-    // dispatch `resizeend` immediately; otherwise, slightly delay it
-    if ( currentOrientation !== initialOrientation ) {
-      dispatchCustomEvent(resizeEnd);
-      initialOrientation = currentOrientation;
-      resizeDebounceInit = false;
-    }
-    else {
-      clearTimeout(resizeDebounceTimeout);
-      resizeDebounceTimeout = setTimeout(function() {
-        dispatchCustomEvent(resizeEnd);
-        resizeDebounceInit = false;
-      }, 100);
-    }
-  }, false);
+		// If `window` is resized due to an orientation change,
+		// dispatch `resizeend` immediately; otherwise, slightly delay it
+		if (currentOrientation !== initialOrientation) {
+			dispatchCustomEvent(resizeEnd);
+			initialOrientation = currentOrientation;
+			resizeDebounceInit = false;
+		} else {
+			clearTimeout(resizeDebounceTimeout);
+			resizeDebounceTimeout = setTimeout(function () {
+				dispatchCustomEvent(resizeEnd);
+				resizeDebounceInit = false;
+			}, 100);
+		}
+	}, false);
 
+	// The plugin
 	$.fn.responsiveLikeBox = function (options) {
 
 		var settings = $.extend({
@@ -132,19 +131,16 @@ Distributed under the MIT license: http://porada.mit-license.org
 							// If JSON is'nt correctly formated will throw error here
 							try {
 								data = $.parseJSON(data);
-							}
-							catch (e) {
+							} catch (e) {
 								// Print error in widget
 								$('<p class="error-msg">There seem to be a problem with your JSON format in your CSS. The error message says: <strong>' + e.message + '</strong></p>').appendTo(el);
 								data = '';
 							}
 						}
-					}
-					else {
+					} else {
 						if (type != 'string') {
 							data = defaults;
-						}
-						else {
+						} else {
 							data = JSON.stringify(defaults);
 						}
 					}
@@ -176,7 +172,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 						widget.iframe.el.show();
 					});
 
-					if (event && event.type === "resizestart"){
+					if (event && event.type === "resizestart") {
 						// Show loader and hide iframe while waiting for resizeend event
 						loader.show();
 						widget.iframe.el.hide();
@@ -210,8 +206,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 								try {
 									var query = newSrc.match(regEx).toString();
 									newSrc = newSrc.replace(regEx, query.substring(0, 1) + helpers.translateToUri[option] + '=' + window.escape(newApperance[option]));
-								}
-								catch (e) {
+								} catch (e) {
 									window.alert('Seems you want to change something you did not specify in your original implementation. If you want to change eg. border-color yo need to specify a border color when you get the code for your fb likebox. Error: ' + e.message);
 								}
 
@@ -243,8 +238,7 @@ Distributed under the MIT license: http://porada.mit-license.org
 						if (settings.initialTimeout) {
 							// Try in 0.5 seconds
 							setTimeout(widget.iframe.resize, 500);
-						}
-						else {
+						} else {
 							loader.hide();
 						}
 
