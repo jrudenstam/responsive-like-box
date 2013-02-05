@@ -1,0 +1,5 @@
+# SublimeText project files
+*.sublime-workspace
+
+# Other
+sftp-config.json
